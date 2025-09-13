@@ -26,14 +26,14 @@ def echo(text: str = Field(description="The text to echo")) -> str:
 
 @mcp.tool(
     title="Fetch restaurant suggestions",
-    description="Fetch restaurant suggestions from Mistral, you must provide the user prompt and the thread ID (0 if no thread ID is known for the moment).",
+    description="Fetch restaurant suggestions from Mistral, you must provide the previous info if the previous research was sunsuccessful.",
 )
-def cherche_restaurant(prompt_utilisateur, thread_id = "0") -> str:
+def cherche_restaurant(prompt_utilisateur) -> str:
     """
     Cette fonction prend le prompt de l'utilisateur, l'enveloppe dans une instruction
     pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
     """
-    return find_restaurant(prompt_utilisateur, thread_id=thread_id)
+    return find_restaurant(prompt_utilisateur)
 
 
 if __name__ == "__main__":
