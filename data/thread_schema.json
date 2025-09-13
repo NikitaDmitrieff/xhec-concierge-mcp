@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/thread/schema#",
+    "title": "Restaurant Booking Threads Database",
+    "description": "Schema for the thread.json database containing restaurant booking information",
+    "type": "object",
+    "properties": {
+      "threads": {
+        "type": "array",
+        "description": "Array of restaurant booking threads",
+        "items": {
+          "type": "object",
+          "description": "Individual restaurant booking thread",
+          "properties": {
+            "id": {
+              "type": "integer",
+              "description": "Unique identifier for the thread",
+              "minimum": 0
+            },
+            "restaurant_type": {
+              "type": "string",
+              "description": "Type of restaurant cuisine",
+              "minLength": 1,
+              "maxLength": 50
+            },
+            "neibourhood": {
+              "type": "string",
+              "description": "Neighborhood or area of the restaurant",
+              "minLength": 1,
+              "maxLength": 100
+            },
+            "alergies": {
+              "type": "array",
+              "description": "List of food allergies or dietary restrictions",
+              "items": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 50
+              },
+              "uniqueItems": true
+            },
+            "time": {
+              "type": "string",
+              "description": "Booking time",
+              "pattern": "^(0?[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$",
+              "examples": ["8:00", "20:00", "19:30"]
+            },
+            "date": {
+              "type": "string",
+              "description": "Booking date",
+              "pattern": "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{4})$",
+              "examples": ["13/09/2025", "01/01/2025", "31/12/2025"]
+            },
+            "number_of_pepole": {
+              "type": "string",
+              "description": "Number of people for the booking",
+              "pattern": "^[1-9][0-9]*$",
+              "examples": ["1", "4", "10"]
+            }
+          },
+          "required": [
+            "id",
+            "restaurant_type", 
+            "neibourhood",
+            "alergies",
+            "time",
+            "date",
+            "number_of_pepole"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["threads"],
+    "additionalProperties": false
+  }

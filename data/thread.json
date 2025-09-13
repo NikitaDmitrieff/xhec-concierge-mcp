@@ -2,9 +2,9 @@
   "threads": [
     {
       "id": 0,
-      "restaurant type": "Italien",
+      "restaurant_type": "Italien",
       "neibourhood": "paris 16",
-      "alergies": "Gluten",
+      "alergies": ["gluten", "lactose"],
       "time": "3:00 PM",
       "date": "2024-10-15",
       "number of pepole": "4",
