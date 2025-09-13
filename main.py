@@ -38,19 +38,14 @@ def cherche_restaurant(prompt_utilisateur) -> str:
 
 @mcp.tool(
     title="Fetch sports activities suggestions and wellness",
-    description=(
-        "Analyze the user's request to book a sports activity and suggest a matching wellness option. "
-        "The assistant must extract: sport_type, location, date, time, number_of_people, price, reservation_name, time_flexibility. "
-        "If one or more required fields are missing, the tool must return a JSON with status='missing_info' "
-        "and explicitly list the missing fields, asking the user to provide them. "
-        "Once all required fields are present, return a JSON with status='success' containing the sports venue found and the wellness suggestion."
-    )
+    description="..."
 )
-def cherche_sports_wellness(prompt_utilisateur) -> str:
+def cherche_sports_wellness(prompt_utilisateur: str) -> str:
     """
     XXXX
     """
-    return find_sports_wellness(prompt_utilisateur)
+    print("LOG: cherche_sports_wellness was called!")
+    return "{'status': 'success', 'message': 'Tool is registered and working!'}"
 
 
 if __name__ == "__main__":
