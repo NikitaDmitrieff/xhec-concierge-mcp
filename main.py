@@ -6,6 +6,13 @@ from mcp.server.fastmcp import FastMCP
 from pydantic import Field
 
 import mcp.types as types
+from mistralai import Mistral
+from dotenv import load_dotenv
+import os
+from src.prompt_resto_client import find_restaurant
+
+
+load_dotenv()
 
 mcp = FastMCP("Echo Server", port=3000, stateless_http=True, debug=True)
 
@@ -17,33 +24,17 @@ mcp = FastMCP("Echo Server", port=3000, stateless_http=True, debug=True)
 def echo(text: str = Field(description="The text to echo")) -> str:
     return text
 
-
-@mcp.resource(
-    uri="greeting://{name}",
-    description="Get a personalized greeting",
-    name="Greeting Resource",
+@mcp.tool(
+    title="Fetch restaurant suggestions",
+    description="Fetch restaurant suggestions from Mistral, you must provide the user prompt and the thread ID (0 if no thread ID is known for the moment).",
 )
-def get_greeting(
-    name: str,
-) -> str:
-    return f"Hello, {name}!"
-
-
-@mcp.prompt("")
-def greet_user(
-    name: str = Field(description="The name of the person to greet"),
-    style: str = Field(description="The style of the greeting", default="friendly"),
-) -> str:
-    """Generate a greeting prompt"""
-    styles = {
-        "friendly": "Please write a warm, friendly greeting",
-        "formal": "Please write a formal, professional greeting",
-        "casual": "Please write a casual, relaxed greeting",
-    }
-
-    return f"{styles.get(style, styles['friendly'])} for someone named {name}."
+def cherche_restaurant(prompt_utilisateur, thread_id = 0) -> str:
+    """
+    Cette fonction prend le prompt de l'utilisateur, l'enveloppe dans une instruction
+    pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
+    """
+    return find_restaurant(prompt_utilisateur, thread_id=thread_id)
 
 
 if __name__ == "__main__":
     mcp.run(transport="streamable-http")
-

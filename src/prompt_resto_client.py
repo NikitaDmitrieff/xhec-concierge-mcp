@@ -86,6 +86,10 @@ def save_to_json_database(thread_id: str, new_info: dict) -> dict:
     
 
 def find_restaurant(user_query: str, thread_id: str):
+    if thread_id == 0: 
+        #generate a random thread id
+        thread_id = str(int(datetime.now().timestamp()))
+        
     api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
     extraction_model = "mistral-large-latest"
     agent_model = "mistral-large-latest"
@@ -193,6 +197,8 @@ def find_restaurant(user_query: str, thread_id: str):
             
         except Exception as e:
             final_output += f"\nError during agent conversation: {e}"
+            
+        final_output += "the Thread ID is " + thread_id
             
         return final_output
 
