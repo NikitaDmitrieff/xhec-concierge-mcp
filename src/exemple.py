@@ -1,38 +1,37 @@
 from mistralai import Mistral
 
-def trouver_restaurants(prompt_utilisateur):
+def find_restaurants(user_prompt):
     """
-    Cette fonction prend le prompt de l'utilisateur, l'enveloppe dans une instruction
-    pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
+    This function takes the user's prompt, wraps it in an instruction for Mistral,
+    and returns a list of 5 restaurants in JSON format.
     """
-    api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"  # Pense à gérer cette clé de manière sécurisée
+    api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"  # Make sure to handle this key securely
     model = "mistral-large-latest"
 
     client = Mistral(api_key=api_key)
 
-    # C'est ici que la magie opère : on "enveloppe" ta demande.
-    prompt_systeme = f"""
-    Tu es un assistant de recherche de restaurants.
-    Ta mission est de me retourner une liste de 5 restaurants qui correspondent à la demande suivante : '{prompt_utilisateur}'.
-    Le résultat doit être exclusivement un objet JSON valide, sans aucun texte avant ou après.
-    Chaque restaurant dans la liste doit contenir les clés suivantes :
-    - "nom": Le nom du restaurant.
-    - "localisation_precise": L'adresse complète du restaurant.
-    - "lien_restaurant": L'URL du site web ou de la page Google Maps du restaurant.
-    - "type_cuisine": Le type de cuisine proposé.
-    - "ordre_de_prix_plat": Une estimation du prix moyen d'un plat principal (par exemple : "15-25€").
+    # This is where the magic happens: we "wrap" your request.
+    system_prompt = f"""
+    You are a restaurant search assistant.
+    Your task is to return a list of 5 restaurants that match the following request: '{user_prompt}'.
+    The result must be exclusively a valid JSON object, with no text before or after.
+    Each restaurant in the list must include the following keys:
+    - "name": The name of the restaurant.
+    - "precise_location": The full address of the restaurant.
+    - "restaurant_link": The URL of the restaurant's website or Google Maps page.
+    - "cuisine_type": The type of cuisine offered.
+    - "price_range_per_dish": An estimate of the average price of a main dish (e.g., "15-25€").
     """
 
     chat_response = client.chat.complete(
         model=model,
-        messages=[{"role": "user", "content": prompt_systeme}],
-        response_format={"type": "json_object"} # Cette option force Mistral à retourner du JSON valide
+        messages=[{"role": "user", "content": system_prompt}],
+        response_format={"type": "json_object"}  # This option forces Mistral to return valid JSON
     )
 
     return chat_response.choices[0].message.content
 
-# Exemple d'utilisation avec ton prompt type
-prompt_de_recherche = "Je cherche un bon restaurant italien à Paris, plutôt abordable."
-resultat_json = trouver_restaurants(prompt_de_recherche)
-
-print(resultat_json)
+# Example usage with your search prompt
+search_prompt = "I'm looking for a good, affordable Italian restaurant in Paris."
+json_result = find_restaurants(search_prompt)
+print(json_result)
