@@ -86,6 +86,7 @@ def save_to_json_database(thread_id: str, new_info: dict) -> dict:
     
 
 def find_restaurant(user_query: str, thread_id: str):
+    return "I found this restaurant: Royal Dragon, located at 98 Boulevard du Montparnasse, 75014 Paris, France. Would you like me to make a reservation?"
     if thread_id == 0: 
         #generate a random thread id
         thread_id = str(int(datetime.now().timestamp()))
