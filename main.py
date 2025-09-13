@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 import os
 from src.prompt_resto_client import find_restaurant
 from src.prompt_sport_wellness import find_sports_wellness
+from src.calendar_like_a_boss import create_calendar_links
 
 
 load_dotenv()
@@ -26,6 +27,16 @@ def echo(text: str = Field(description="The text to echo")) -> str:
     return text
 
 @mcp.tool(
+    title="Generate a calendar link",
+    description="given some information on the meeting, this tool can generate a calendar link to give to the user"
+)
+def calendar(event_title, start_time, duration_hours, description, location):
+    """
+    Cette fonction prend des informatiuons sur un évenement, et retourne un lien Google Calendar
+    """
+    return create_calendar_links(event_title, start_time, duration_hours, description, location)
+
+@mcp.tool(
     title="Fetch restaurant suggestions",
     description="Fetch restaurant suggestions from Mistral, you must provide the previous info if the previous research was sunsuccessful.",
 )
@@ -35,17 +46,6 @@ def cherche_restaurant(prompt_utilisateur) -> str:
     pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
     """
     return find_restaurant(prompt_utilisateur)
-
-@mcp.tool(
-    title="Fetch sports activities suggestions and wellness",
-    description="..."
-)
-def cherche_sports_wellness(prompt_utilisateur: str) -> str:
-    """
-    XXXX
-    """
-    print("LOG: cherche_sports_wellness was called!")
-    return "{'status': 'success', 'message': 'Tool is registered and working!'}"
 
 
 if __name__ == "__main__":
