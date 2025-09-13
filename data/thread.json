@@ -5,9 +5,10 @@
       "restaurant_type": "Italien",
       "neibourhood": "paris 16",
       "alergies": ["gluten", "lactose"],
-      "time": "8:00",
-      "date": "13/09/2025",
-      "number_of_pepole": "4"
+      "time": "3:00 PM",
+      "date": "2024-10-15",
+      "number of pepole": "4",
+      "price": "<30€"
     }
     ]
 }
