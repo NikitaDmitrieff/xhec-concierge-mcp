@@ -8,6 +8,7 @@ from pydantic import Field
 import mcp.types as types
 from mistralai import Mistral
 from dotenv import load_dotenv
+import os
 
 
 load_dotenv()
@@ -34,9 +35,8 @@ def trouver_restaurants(prompt_utilisateur):
       # Pense à gérer cette clé de manière sécurisée
     model = "mistral-large-latest"
 
-    client = Mistral(api_key=env.get("MISTRAL_API_KEY"))
+    client = Mistral(api_key=os.getenv("MISTRAL_API_KEY"))
 
-    # C'est ici que la magie opère : on "enveloppe" ta demande.
     prompt_systeme = f"""
     Tu es un assistant de recherche de restaurants.
     Ta mission est de me retourner une liste de 5 restaurants qui correspondent à la demande suivante : '{prompt_utilisateur}'.
