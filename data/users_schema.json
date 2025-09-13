@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/users/schema#",
+    "title": "Restaurant Booking User Database",
+    "description": "Schema for the users.json database containing users booking information",
+    "type": "object",
+    "properties": {
+      "users": {
+        "type": "array",
+        "description": "Array of users booking information",
+        "items": {
+          "type": "object",
+          "description": "Users information",
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Name of the user",
+              "minimum": 2
+            },
+            "id": {
+              "type": "integer",
+              "description": "Unique identifier of the user",
+              "minLength": 1,
+              "maxLength": 50000000, 
+              "uniqueItems": true
+            },
+            "age": {
+              "type": "integer",
+              "description": "Age of the user",
+              "minLength": 1,
+              "maxLength": 130
+            },
+            "gender": {
+              "type": "string",
+              "description": "Gender of the user (Homme/Femme)",
+              "examples": ["Homme", "Femme"],
+            },
+            "price range": {
+                 "type": "string",
+                "description": "Price range paid by the user",
+                "pattern": "^[0-9]+-[0-9]+€$",
+                "examples": ["20-50€", "15-40€", "30-80€"]
+                },
+            "localisation": {
+                "type": "string",
+                "description": "User's city and district/arrondissement",
+                "pattern": "^[A-Za-zÀ-ÖØ-öø-ÿ]+( [0-9]{1,2}(er|ème)?)?$",
+                "examples": ["Paris 18ème", "Lyon 8", "Paris 11"]
+                },
+            "History": {
+                "type": "array",
+                "description": "Restaurants already visited by the user.",
+                "items": {
+                    "type": "string",
+                    "pattern": ".*"
+                    },
+                "examples": [
+                    ["Café Méricourt", "Le Potager du Marais", "Hardware Société"],
+                    ["Le Méchoui du Prince", "Chez Omar", "Le Tagine"]
+                    ]
+            }
+
+          },
+          "required": [
+            "name",
+            "id",
+            "localisation", 
+            "preferences",
+            "history"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "required": ["users"],
+    "additionalProperties": false
+  }
