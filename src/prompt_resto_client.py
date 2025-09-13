@@ -203,8 +203,8 @@ def find_restaurant(user_query: str, thread_id: str):
         return final_output + "thread_id: " + thread_id
 
 
-user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
-print(find_restaurant(user_call_1, "0"))
+#user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
+#print(find_restaurant(user_call_1, "0"))
 
 
 # print("\n" + "="*50 + "\n")
