@@ -1,0 +1,30 @@
+{
+    "threads": [
+        {
+            "id_thread": 1234,
+            "restaurant_type": "Chinese",
+            "neibourhood": "Montparnasse",
+            "alergies": null,
+            "time": null,
+            "date": null,
+            "number_of_pepole": null,
+            "price": {
+                "min": null,
+                "max": 30
+            }
+        },
+        {
+            "id_thread": 2345,
+            "restaurant_type": "Italian",
+            "neibourhood": "Paris 16",
+            "alergies": "Gluten",
+            "time": "20:00",
+            "date": "October 20th, 2025",
+            "number_of_pepole": 2,
+            "price": {
+                "min": 20,
+                "max": 50
+            }
+        }
+    ]
+}

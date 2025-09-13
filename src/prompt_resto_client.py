@@ -45,6 +45,50 @@ def parse_price(price_str: str | None) -> dict | None:
             price_data["min"] = price_data["max"] = numbers[0]
     return price_data
 
+def save_to_json_database(thread_id: str, extracted_info: dict):
+    """
+    Saves the extracted data to thread.json using the chat thread ID.
+    The data is already formatted by the MCP.
+    """
+    database_file = "thread.json"
+    # Load existing data or initialize the structure
+    try:
+        with open(database_file, "r") as f:
+            database = json.load(f)
+    except (FileNotFoundError, json.JSONDecodeError):
+        database = {"threads": []}
+
+    # Prepare data for the thread (no transformation)
+    thread_data = {
+        "id_thread": thread_id,
+        "restaurant_type": extracted_info.get("restaurant type"),
+        "neibourhood": extracted_info.get("neighborhood"),
+        "alergies": extracted_info.get("allergies"),
+        "time": extracted_info.get("time"),
+        "date": extracted_info.get("date"),
+        "number_of_pepole": extracted_info.get("number of people"),
+        "price": extracted_info.get("price")
+    }
+
+    # Check if a thread with the same id_thread already exists
+    existing_thread_index = next(
+        (i for i, thread in enumerate(database["threads"]) if thread.get("id_thread") == thread_id),
+        None
+    )
+
+    if existing_thread_index is not None:
+        # Update the existing thread with new data
+        database["threads"][existing_thread_index].update(thread_data)
+        print(f"Thread {thread_id} updated in {database_file}.")
+    else:
+        # Add a new thread
+        database["threads"].append(thread_data)
+        print(f"Thread {thread_id} saved in {database_file}.")
+
+    # Save to file
+    with open(database_file, "w") as f:
+        json.dump(database, f, indent=4)
+
 def find_restaurant(user_query: str, thread_id: str):
     api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
     extraction_model = "mistral-large-latest"
@@ -149,6 +193,9 @@ def find_restaurant(user_query: str, thread_id: str):
             final_output += search_result_message
             # --- END: CORRECTED FINAL MESSAGE ---
 
+            extracted_info["restaurant_found"] = restaurant_found
+            save_to_json_database(thread_id, extracted_info)
+            
         except Exception as e:
             final_output += f"\nError during agent conversation: {e}"
 
@@ -156,9 +203,9 @@ def find_restaurant(user_query: str, thread_id: str):
         return final_output
 
 user_call_1 = "find me a restaurant close to Montparnasse, a Chinese one, not more than 30€, I have no alergies"
-print(find_restaurant(user_call_1))
+print(find_restaurant(user_call_1, 1234))
 
 print("\n" + "="*50 + "\n")
 
 user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 20th, 2025 at 8:00 PM. Price range is 20-50€. Please note a Gluten allergy."
-print(find_restaurant(user_call_2))
+print(find_restaurant(user_call_2, 2345))
