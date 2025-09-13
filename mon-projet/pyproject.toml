@@ -1,15 +1,10 @@
 [project]
-name = "mcp-mistral-hackathon"
+name = "mon-projet"
 version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
-    "mcp>=1.14.0",
     "mistralai>=1.9.10",
-    "numpy>=2.3.3",
-    "pydantic>=2.11.9",
+    "python-dotenv>=1.1.1",
 ]
-
-[tool.uv.workspace]
-members = ["mon-projet"]
