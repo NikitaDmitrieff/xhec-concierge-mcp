@@ -62,6 +62,17 @@
             "number of people": 2,
             "price": null,
             "restaurant_found": null
+        },
+        {
+            "id_thread": "60771763",
+            "restaurant type": null,
+            "neighborhood": null,
+            "allergies": "no allergies",
+            "time": "12:10",
+            "date": "12/11/2027",
+            "number of people": 2,
+            "price": null,
+            "restaurant_found": null
         }
     ]
 }
