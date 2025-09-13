@@ -178,7 +178,7 @@ def find_restaurant(user_query: str) -> str:
             return f"Error: I had trouble searching for a restaurant. {e}"
 
 
-# --- Example Usage ---
+'''# --- Example Usage ---
 
 # Example 1: Initial call without booking details.
 # The function should find a restaurant and then ask for the name and flexibility.
@@ -192,4 +192,4 @@ print("\n" + "="*50 + "\n")
 # The function should find a restaurant and confirm the booking directly.
 user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 19th, 2025 at 7:00 PM. Price range is 20-50€, with a gluten allergy. The reservation is for Smith, and we are flexible by plus or minus 30 minutes."
 print("--- Second Call (with all details) ---")
-print(find_restaurant(user_call_2))
+print(find_restaurant(user_call_2))'''

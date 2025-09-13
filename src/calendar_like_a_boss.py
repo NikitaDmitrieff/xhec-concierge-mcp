@@ -33,7 +33,7 @@ def create_calendar_links(event_title, start_time, duration_hours, description, 
     return link
 
 
-if __name__ == "__main__":
+'''if __name__ == "__main__":
     # --- Utilisation ---
     event_details = {
     "event_title": "Dîner chez 'Le Grand Restaurant'",
@@ -44,4 +44,4 @@ if __name__ == "__main__":
 }
     calendar_link = create_calendar_links(**event_details)
 
-    print(f"Google: {calendar_link}")
+    print(f"Google: {calendar_link}")'''

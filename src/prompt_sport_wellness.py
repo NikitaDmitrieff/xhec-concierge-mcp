@@ -141,8 +141,9 @@ def find_sports_wellness(user_query: str) -> str:
         }
     }, indent=2)
 
-
+'''
 # --- Example Usage ---
 if __name__ == "__main__":
     user_call = "I want to play tennis in Paris 15th tomorrow for 2 people, then book a recovery massage."
     print(find_sports_wellness(user_call))
+'''
