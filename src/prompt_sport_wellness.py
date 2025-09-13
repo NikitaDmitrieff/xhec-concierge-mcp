@@ -5,9 +5,8 @@ from mistralai import Mistral
 from dotenv import load_dotenv
 import os
 
-# --- Load API key from .env ---
-load_dotenv()
-API_KEY = os.getenv("MISTRAL_API_KEY")
+API_KEY = "VrfSiwwufNdGz1b9ekZmBsWDf1yyqqDX"
+
 
 if not API_KEY:
     raise ValueError("⚠️ Missing MISTRAL_API_KEY in .env")
