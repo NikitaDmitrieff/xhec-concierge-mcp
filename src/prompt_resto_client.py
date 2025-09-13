@@ -169,10 +169,10 @@ def find_restaurant(user_query: str) -> str:
                 # If all information is present, confirm the booking
                 reservation_name = extracted_info.get('reservation_name')
                 time_flexibility = extracted_info.get('time_flexibility')
-                return (f"Thank you, {reservation_name}. I will now make the reservation at {name} "
+                return (f"Thank you, {reservation_name}. Would you like me to make the reservation at {name} "
                         f"({address}, {phone_number}) for {extracted_info.get('number_of_people')} people "
                         f"on {extracted_info.get('date')} at {extracted_info.get('time')}, "
-                        f"noting your time flexibility of '{time_flexibility}'.")
+                        f"noting your time flexibility of '{time_flexibility}'?")
             
         except Exception as e:
             return f"Error: I had trouble searching for a restaurant. {e}"
