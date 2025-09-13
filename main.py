@@ -3,6 +3,7 @@ MCP Server Template
 """
 
 from mcp.server.fastmcp import FastMCP
+import os
 from pydantic import Field
 from src.prompt_resto_client import find_restaurant
 

@@ -160,14 +160,23 @@ def find_restaurant(user_query: str):
 
         return final_output
 
-# --- EXAMPLES ---
+"""
+Example usage is guarded to avoid import-time side effects during server startup
+and in AWS Lambda environments. Run this module directly to execute examples.
+"""
 
-# Example 1: User provides partial information
-user_call_1 = "find me a restaurant close to Montparnasse, a Chinese one, not more than 30€, I have no alergies"
-print(find_restaurant(user_call_1))
+if __name__ == "__main__":
+    # --- EXAMPLES ---
+    # Example 1: User provides partial information
+    user_call_1 = (
+        "find me a restaurant close to Montparnasse, a Chinese one, not more than 30€, I have no alergies"
+    )
+    print(find_restaurant(user_call_1))
 
-print("\n" + "="*50 + "\n")
+    print("\n" + "=" * 50 + "\n")
 
-# Example 2: User provides all necessary information
-user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 20th, 2025 at 8:00 PM. Price range is 20-50€. Please note a Gluten allergy."
-print(find_restaurant(user_call_2))
+    # Example 2: User provides all necessary information
+    user_call_2 = (
+        "I need a reservation for an Italian place in Paris 16 for 2 people on October 20th, 2025 at 8:00 PM. Price range is 20-50€. Please note a Gluten allergy."
+    )
+    print(find_restaurant(user_call_2))
