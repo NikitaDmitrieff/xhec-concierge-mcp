@@ -202,12 +202,8 @@ def find_restaurant(user_query: str, thread_id: str):
             
         return final_output
 
-# Create or clear the database file for a clean run
-if os.path.exists("thread.json"):
-    os.remove("thread.json")
-
 user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
-print(find_restaurant(user_call_1, "1234"))
+print(find_restaurant(user_call_1, 1234))
 
 
 # print("\n" + "="*50 + "\n")
