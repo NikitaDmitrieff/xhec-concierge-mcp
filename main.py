@@ -10,8 +10,8 @@ from mistralai import Mistral
 from dotenv import load_dotenv
 import os
 from src.prompt_resto_client import find_restaurant
+from calendar_like_a_boss import create_calendar_links
 from src.prompt_sport_wellness import find_sports_wellness
-
 
 load_dotenv()
 
