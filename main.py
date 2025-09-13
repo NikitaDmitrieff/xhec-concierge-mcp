@@ -4,6 +4,7 @@ MCP Server Template
 
 from mcp.server.fastmcp import FastMCP
 from pydantic import Field
+from src.prompt_resto_client import find_restaurant
 
 import mcp.types as types
 
@@ -17,31 +18,12 @@ mcp = FastMCP("Echo Server", port=3000, stateless_http=True, debug=True)
 def echo(text: str = Field(description="The text to echo")) -> str:
     return text
 
-
-@mcp.resource(
-    uri="greeting://{name}",
-    description="Get a personalized greeting",
-    name="Greeting Resource",
+@mcp.tool(
+    title="Fetch restaurant suggestions",
+    description="Fetch restaurant suggestions from Mistral",
 )
-def get_greeting(
-    name: str,
-) -> str:
-    return f"Hello, {name}!"
-
-
-@mcp.prompt("")
-def greet_user(
-    name: str = Field(description="The name of the person to greet"),
-    style: str = Field(description="The style of the greeting", default="friendly"),
-) -> str:
-    """Generate a greeting prompt"""
-    styles = {
-        "friendly": "Please write a warm, friendly greeting",
-        "formal": "Please write a formal, professional greeting",
-        "casual": "Please write a casual, relaxed greeting",
-    }
-
-    return f"{styles.get(style, styles['friendly'])} for someone named {name}."
+def fetch_restaurant_suggestions(prompt: str = Field(description="The prompt to fetch restaurant suggestions")) -> str:
+    return find_restaurant(prompt)
 
 
 if __name__ == "__main__":
