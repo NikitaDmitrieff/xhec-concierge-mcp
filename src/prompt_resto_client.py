@@ -45,7 +45,7 @@ def parse_price(price_str: str | None) -> dict | None:
     return price_data
 
 def save_to_json_database(thread_id: str, new_info: dict) -> dict:
-    database_file = "../data/thread.json"
+    database_file = "tmp/thread.json" #shady buisness with paths
     try:
         with open(database_file, "r") as f:
             database = json.load(f)

@@ -1,0 +1,44 @@
+{
+  "users": [
+    {
+      "name": "Jean Dupont",
+      "id": 0,
+      "age": 30,
+      "gender": "Homme",
+      "price range": "20-50€",
+      "localisation": "Paris 16ème",
+      "preferences": ["Cuisine française", "Ambiance calme", "Vins"],
+      "History": ["Onyx", "Le Paris 16", "La Table de Martine"]
+    },
+    {
+      "name": "Marie Lefèvre",
+      "id": 0,
+      "age": 27,
+      "gender": "Femme",
+      "price range": "15-40€",
+      "localisation": "Paris 11ème",
+      "preferences": ["Cuisine végétarienne", "Brunch", "Cafés cosy"],
+      "History": ["Café Méricourt", "Le Potager du Marais", "Hardware Société"]
+    },
+    {
+      "name": "Karim Benali",
+      "id": 0,
+      "age": 35,
+      "gender": "Homme",
+      "price range": "25-60€",
+      "localisation": "Paris 18ème",
+      "preferences": ["Cuisine orientale", "Terrasses", "Ambiance familiale"],
+      "History": ["Le Méchoui du Prince", "Chez Omar", "Le Tagine"]
+    },
+    {
+      "name": "Sophie Martin",
+      "id": 0,
+      "age": 42,
+      "gender": "Femme",
+      "price range": "30-80€",
+      "localisation": "Paris 7ème",
+      "preferences": ["Haute gastronomie", "Poissons & fruits de mer", "Service raffiné"],
+      "History": ["Le Jules Verne", "L'Arpège", "Les Ombres"]
+    }
+  ]
+}
