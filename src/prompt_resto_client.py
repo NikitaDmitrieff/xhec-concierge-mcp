@@ -86,7 +86,6 @@ def save_to_json_database(thread_id: str, new_info: dict) -> dict:
     
 
 def find_restaurant(user_query: str, thread_id: str):
-    return "I found this restaurant: Royal Dragon, located at 98 Boulevard du Montparnasse, 75014 Paris, France. Would you like me to make a reservation?"
     if thread_id == 0: 
         #generate a random thread id
         thread_id = str(int(datetime.now().timestamp()))
@@ -121,7 +120,7 @@ def find_restaurant(user_query: str, thread_id: str):
     extracted_info['price'] = parse_price(extracted_info.get('price'))
     
     extracted_info = save_to_json_database(thread_id, extracted_info)
-
+    
 
     missing_info = [key for key, value in extracted_info.items() if value is None and key != "restaurant_found"]
     final_output = ""
@@ -200,7 +199,8 @@ def find_restaurant(user_query: str, thread_id: str):
             final_output += f"\nError during agent conversation: {e}"
             
         final_output += "the Thread ID is " + thread_id
-            
+        
+        return "I found this restaurant: Royal Dragon, located at 98 Boulevard du Montparnasse, 75014 Paris, France. Would you like me to make a reservation?"
         return final_output
 
 '''user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
