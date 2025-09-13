@@ -4,7 +4,6 @@ import os
 from datetime import datetime
 from mistralai import Mistral
 
-
 def parse_time(time_str: str | None) -> str | None:
     if not time_str:
         return None
@@ -45,49 +44,46 @@ def parse_price(price_str: str | None) -> dict | None:
             price_data["min"] = price_data["max"] = numbers[0]
     return price_data
 
-def save_to_json_database(thread_id: str, extracted_info: dict):
-    """
-    Saves the extracted data to thread.json using the chat thread ID.
-    The data is already formatted by the MCP.
-    """
-    database_file = "thread.json"
-    # Load existing data or initialize the structure
+def save_to_json_database(thread_id: str, new_info: dict) -> dict:
+    database_file = "data/thread.json"
     try:
         with open(database_file, "r") as f:
             database = json.load(f)
     except (FileNotFoundError, json.JSONDecodeError):
         database = {"threads": []}
 
-    # Prepare data for the thread (no transformation)
-    thread_data = {
-        "id_thread": thread_id,
-        "restaurant_type": extracted_info.get("restaurant type"),
-        "neibourhood": extracted_info.get("neighborhood"),
-        "alergies": extracted_info.get("allergies"),
-        "time": extracted_info.get("time"),
-        "date": extracted_info.get("date"),
-        "number_of_pepole": extracted_info.get("number of people"),
-        "price": extracted_info.get("price")
-    }
+    thread_index = next((i for i, t in enumerate(database["threads"]) if t.get("id_thread") == thread_id), None)
 
-    # Check if a thread with the same id_thread already exists
-    existing_thread_index = next(
-        (i for i, thread in enumerate(database["threads"]) if thread.get("id_thread") == thread_id),
-        None
-    )
-
-    if existing_thread_index is not None:
-        # Update the existing thread with new data
-        database["threads"][existing_thread_index].update(thread_data)
-        print(f"Thread {thread_id} updated in {database_file}.")
+    if thread_index is not None:
+        # Merge new info into the existing thread, overwriting only if value not None
+        for key, value in new_info.items():
+            if value is not None:
+                database["threads"][thread_index][key] = value
+        merged_thread = database["threads"][thread_index]
+        #print(f"Thread {thread_id} updated in {database_file}.")
     else:
-        # Add a new thread
-        database["threads"].append(thread_data)
-        print(f"Thread {thread_id} saved in {database_file}.")
+        # Create a new thread structure
+        merged_thread = {
+            "id_thread": thread_id,
+            "restaurant type": new_info.get("restaurant type"),
+            "neighborhood": new_info.get("neighborhood"),
+            "allergies": new_info.get("allergies"),
+            "time": new_info.get("time"),
+            "date": new_info.get("date"),
+            "number of people": new_info.get("number of people"),
+            "price": new_info.get("price"),
+            "restaurant_found": new_info.get("restaurant_found")
+        }
+        database["threads"].append(merged_thread)
+        #print(f"Thread {thread_id} created in {database_file}.")
 
-    # Save to file
+    # Save updated database
     with open(database_file, "w") as f:
         json.dump(database, f, indent=4)
+
+    return merged_thread
+        
+    
 
 def find_restaurant(user_query: str, thread_id: str):
     api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
@@ -101,7 +97,7 @@ def find_restaurant(user_query: str, thread_id: str):
     extract the following information into a strict JSON format.
     The keys must be: "restaurant type", "neighborhood", "allergies", "time",
     "date", "number of people", "price".
-    If a piece of information is not available, the value must be null.
+    If a piece of information is not available, the value must be null. except for alergies, where you put "no alergies"
     Do not add any text before or after the JSON object.
     User request: "{user_query}"
     """
@@ -119,13 +115,14 @@ def find_restaurant(user_query: str, thread_id: str):
     extracted_info['number of people'] = parse_people(extracted_info.get('number of people'))
     extracted_info['price'] = parse_price(extracted_info.get('price'))
     
-    save_to_json_database(thread_id, extracted_info)
+    extracted_info = save_to_json_database(thread_id, extracted_info)
 
-    missing_info = [key for key, value in extracted_info.items() if value is None]
-    final_output = "json: " + json.dumps(extracted_info, indent=4) + "\n"
+
+    missing_info = [key for key, value in extracted_info.items() if value is None and key != "restaurant_found"]
+    final_output = ""
 
     if missing_info:
-        message = "message: I have the following details: "
+        message = "I have the following details: "
         for key, value in extracted_info.items():
             if value is not None:
                 message += f"{key.replace('_', ' ')}: {value}, "
@@ -142,11 +139,6 @@ def find_restaurant(user_query: str, thread_id: str):
                 price_msg = f"up to {price_info['max']}€"
             elif price_info.get('min'):
                 price_msg = f"starting from {price_info['min']}€"
-
-        confirmation_message = (
-            f"message: Great! I have all the details. I am now creating a web search agent to find a real restaurant..."
-        )
-        final_output += confirmation_message
         
         websearch_agent = None
         try:
@@ -154,7 +146,7 @@ def find_restaurant(user_query: str, thread_id: str):
                 model=agent_model,
                 name="Web Search Restaurant Finder",
                 description="Agent that finds real restaurants using web search.",
-                instructions="You must use your web_search tool to find one single real restaurant matching the user's request. Verify its existence and address. Your final answer must be ONLY a valid JSON object with the keys 'name', 'address', and 'website'. Do not include any other text.",
+                instructions="You must use your web_search tool to find one single real restaurant matching the user's request. Your final answer must be ONLY a valid JSON object with the keys 'name', 'address', and 'website'. Do not include any other text.",
                 tools=[{"type": "web_search"}],
             )
             
@@ -170,42 +162,49 @@ def find_restaurant(user_query: str, thread_id: str):
                 agent_id=websearch_agent.id,
                 inputs=search_prompt
             )
+        
+
             
-            final_message_content = None
-            for output_entry in response.outputs:
-                if hasattr(output_entry, 'type') and output_entry.type == 'message.output':
-                    final_message_content = output_entry.content
-                    break
+            final_message_content = next(
+                (
+                    output.content
+                    for output in response.outputs
+                    if hasattr(output, 'type') and output.type == 'message.output'
+                ),
+                None  
+            )
             
             if not final_message_content:
                  raise ValueError("Agent did not return a final 'message.output' entry.")
+            
+            clean_json_str = re.sub(r'^```json\s*|\s*```$', '', final_message_content, flags=re.MULTILINE)
+            restaurant_found_dict = json.loads(clean_json_str)
 
-            restaurant_found = json.loads(final_message_content)
-
-            # --- START: CORRECTED FINAL MESSAGE ---
-            name = restaurant_found.get("name", "N/A")
-            address = restaurant_found.get("address", "N/A")
+            name = restaurant_found_dict.get("name", "N/A")
+            address = restaurant_found_dict.get("address", "N/A")
             
             search_result_message = (
-                f"\nmessage: I found this restaurant: {name}, located at {address}. "
+                f"\nI found this restaurant: {name}, located at {address}. "
                 f"Would you like me to make a reservation?"
             )
             final_output += search_result_message
-            # --- END: CORRECTED FINAL MESSAGE ---
 
-            extracted_info["restaurant_found"] = restaurant_found
-            save_to_json_database(thread_id, extracted_info)
+            save_to_json_database(thread_id, {"restaurant_found": restaurant_found_dict})
             
         except Exception as e:
             final_output += f"\nError during agent conversation: {e}"
-
-
+            
         return final_output
 
-user_call_1 = "find me a restaurant close to Montparnasse, a Chinese one, not more than 30€, I have no alergies"
-print(find_restaurant(user_call_1, 1234))
+# Create or clear the database file for a clean run
+if os.path.exists("thread.json"):
+    os.remove("thread.json")
 
-print("\n" + "="*50 + "\n")
+user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" #"find me a restaurant close to Montparnasse, a Chinese one, not more than 30€, I have no alergies"
+print(find_restaurant(user_call_1, "1234"))
 
-user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 20th, 2025 at 8:00 PM. Price range is 20-50€. Please note a Gluten allergy."
-print(find_restaurant(user_call_2, 2345))
+
+# print("\n" + "="*50 + "\n")
+
+# user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 20th, 2025 at 8:00 PM. Price range is 20-50€. Please note a Gluten allergy."
+# print(find_restaurant(user_call_2, "2345"))
