@@ -2,14 +2,8 @@ import json
 import re
 import os
 from datetime import datetime
-from dotenv import load_dotenv
-# Corrected import to use the new, non-deprecated client
 from mistralai import Mistral
 
-# Load environment variables from .env file
-load_dotenv()
-
-# --- Helper Functions for Data Standardization (No changes here) ---
 
 def parse_time(time_str: str | None) -> str | None:
     if not time_str:
@@ -51,18 +45,11 @@ def parse_price(price_str: str | None) -> dict | None:
             price_data["min"] = price_data["max"] = numbers[0]
     return price_data
 
-def find_restaurant(user_query: str):
-    """
-    Uses Mistral AI to first extract reservation details and then find a restaurant.
-    """
-    # Get API key from environment variables
-    api_key = os.getenv("MISTRAL_API_KEY")
-    model = "mistral-large-latest"
-
-    if not api_key:
-        return "Error: MISTRAL_API_KEY not found in environment variables. Please check your .env file."
-
-    # Use the new Mistral class for the client
+def find_restaurant(user_query: str, thread_id: str):
+    api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
+    extraction_model = "mistral-large-latest"
+    agent_model = "mistral-large-latest"
+    
     client = Mistral(api_key=api_key)
 
     extraction_prompt = f"""
@@ -87,6 +74,8 @@ def find_restaurant(user_query: str):
     extracted_info['time'] = parse_time(extracted_info.get('time'))
     extracted_info['number of people'] = parse_people(extracted_info.get('number of people'))
     extracted_info['price'] = parse_price(extracted_info.get('price'))
+    
+    save_to_json_database(thread_id, extracted_info)
 
     missing_info = [key for key, value in extracted_info.items() if value is None]
     final_output = "json: " + json.dumps(extracted_info, indent=4) + "\n"
@@ -162,6 +151,7 @@ def find_restaurant(user_query: str):
 
         except Exception as e:
             final_output += f"\nError during agent conversation: {e}"
+
 
         return final_output
 
