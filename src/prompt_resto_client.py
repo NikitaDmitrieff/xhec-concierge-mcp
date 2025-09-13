@@ -146,7 +146,7 @@ def find_restaurant(user_query: str, thread_id: str):
                 model=agent_model,
                 name="Web Search Restaurant Finder",
                 description="Agent that finds real restaurants using web search.",
-                instructions="You must use your web_search tool to find one single real restaurant matching the user's request. Your final answer must be ONLY a valid JSON object with the keys 'name', 'address', and 'website'. Do not include any other text.",
+                instructions="You must use your web_search tool to find one single real restaurant matching the user's request. Your final answer must be ONLY a valid JSON object with the keys 'name', 'address', and 'website', 'phone number'. Do not include any other text.",
                 tools=[{"type": "web_search"}],
             )
             
@@ -200,7 +200,7 @@ def find_restaurant(user_query: str, thread_id: str):
 if os.path.exists("thread.json"):
     os.remove("thread.json")
 
-user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" #"find me a restaurant close to Montparnasse, a Chinese one, not more than 30€, I have no alergies"
+user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
 print(find_restaurant(user_call_1, "1234"))
 
 
