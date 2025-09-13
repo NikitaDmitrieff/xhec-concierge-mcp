@@ -5,7 +5,9 @@ from datetime import datetime
 from mistralai import Mistral
 import numpy as np
 
-API_KEY = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
+API_KEY = "VrfSiwwufNdGz1b9ekZmBsWDf1yyqqDX"
+#"Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
+
 
 def parse_time(time_str: str | None) -> str | None:
     if not time_str:
