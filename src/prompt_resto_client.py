@@ -2,7 +2,14 @@ import json
 import re
 import os
 from datetime import datetime
+from dotenv import load_dotenv
+# Corrected import to use the new, non-deprecated client
 from mistralai import Mistral
+
+# Load environment variables from .env file
+load_dotenv()
+
+# --- Helper Functions for Data Standardization (No changes here) ---
 
 def parse_time(time_str: str | None) -> str | None:
     if not time_str:
@@ -45,10 +52,17 @@ def parse_price(price_str: str | None) -> dict | None:
     return price_data
 
 def find_restaurant(user_query: str):
-    api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
-    extraction_model = "mistral-large-latest"
-    agent_model = "mistral-large-latest"
-    
+    """
+    Uses Mistral AI to first extract reservation details and then find a restaurant.
+    """
+    # Get API key from environment variables
+    api_key = os.getenv("MISTRAL_API_KEY")
+    model = "mistral-large-latest"
+
+    if not api_key:
+        return "Error: MISTRAL_API_KEY not found in environment variables. Please check your .env file."
+
+    # Use the new Mistral class for the client
     client = Mistral(api_key=api_key)
 
     extraction_prompt = f"""
