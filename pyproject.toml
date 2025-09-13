@@ -5,5 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "mcp>=1.14.0",
     "numpy>=2.3.3",
+    "pydantic>=2.11.9",
 ]
