@@ -10,6 +10,7 @@ API_KEY = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"
 def parse_time(time_str: str | None) -> str | None:
     if not time_str:
         return None
+    # Tries to parse several common time formats
     formats_to_try = ['%I:%M %p', '%H:%M', '%I %p']
     for fmt in formats_to_try:
         try:
@@ -22,6 +23,7 @@ def parse_people(people_str: str | None) -> int | None:
     if not people_str:
         return None
     try:
+        # Finds all digits in the string and takes the first one
         found_digits = re.findall(r'\d+', str(people_str))
         if found_digits:
             return int(found_digits[0])
@@ -39,6 +41,7 @@ def parse_price(price_str: str | None) -> dict | None:
     if len(numbers) >= 2:
         price_data["min"], price_data["max"] = min(numbers), max(numbers)
     elif len(numbers) == 1:
+        # Interprets the price based on keywords present in the string
         if any(k in price_str.lower() for k in ['<', 'less', 'under', 'max', 'not more than']):
             price_data["max"] = numbers[0]
         elif any(k in price_str.lower() for k in ['>', 'more', 'over', 'min']):
@@ -46,59 +49,16 @@ def parse_price(price_str: str | None) -> dict | None:
         else:
             price_data["min"] = price_data["max"] = numbers[0]
     return price_data
-
-def save_to_json_database(thread_id: str, new_info: dict) -> dict:
-    database_file = "data/thread.json"
-    try:
-        with open(database_file, "r") as f:
-            database = json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        database = {"threads": []}
-
-    thread_index = next((i for i, t in enumerate(database["threads"]) if t.get("id_thread") == thread_id), None)
-
-    if thread_index is not None:
-        # Merge new info into the existing thread, overwriting only if value not None
-        for key, value in new_info.items():
-            if value is not None:
-                database["threads"][thread_index][key] = value
-        merged_thread = database["threads"][thread_index]
-        #print(f"Thread {thread_id} updated in {database_file}.")
-    else:
-        # Create a new thread structure
-        merged_thread = {
-            "id_thread": thread_id,
-            "restaurant type": new_info.get("restaurant type"),
-            "neighborhood": new_info.get("neighborhood"),
-            "allergies": new_info.get("allergies"),
-            "time": new_info.get("time"),
-            "date": new_info.get("date"),
-            "number of people": new_info.get("number of people"),
-            "price": new_info.get("price"),
-            "restaurant_found": new_info.get("restaurant_found")
-        }
-        database["threads"].append(merged_thread)
-        #print(f"Thread {thread_id} created in {database_file}.")
-
-    # Save updated database
-    with open(database_file, "w") as f:
-        json.dump(database, f, indent=4)
-
-    return merged_thread
-        
     
-
 def find_restaurant(user_query: str) -> str:
     """
-    Analyzes a user's request for a restaurant in a single, stateless call.
+    Analyzes a user's request for a restaurant.
 
     If the query has enough information, it performs a web search.
     If not, it requests the missing information.
+    Once a restaurant is found, it asks for a name and time flexibility for the reservation.
     """
-    # --- This section should be secured, e.g., using environment variables ---
-    # IMPORTANT: Replace "YOUR_MISTRAL_API_KEY" with your actual Mistral API key.
     api_key = API_KEY
-    # --------------------------------------------------------------------
     
     extraction_model = "mistral-large-latest"
     agent_model = "mistral-large-latest"
@@ -109,8 +69,8 @@ def find_restaurant(user_query: str) -> str:
     extraction_prompt = f"""
     You are a restaurant booking assistant. Analyze the user's request and
     extract the following information into a strict JSON format.
-    The keys must be: "restaurant type", "neighborhood", "allergies", "time",
-    "date", "number of people", "price".
+    The keys must be: "restaurant_type", "neighborhood", "allergies", "time",
+    "date", "number_of_people", "price", "reservation_name", "time_flexibility".
     If a piece of information is not available, the value must be null. For allergies, use "no allergies" if none are mentioned.
     Do not add any text before or after the JSON object.
     User request: "{user_query}"
@@ -127,26 +87,25 @@ def find_restaurant(user_query: str) -> str:
 
     # Step 2: Parse and clean the extracted data
     extracted_info['time'] = parse_time(extracted_info.get('time'))
-    extracted_info['number of people'] = parse_people(extracted_info.get('number of people'))
+    extracted_info['number_of_people'] = parse_people(extracted_info.get('number_of_people'))
     extracted_info['price'] = parse_price(extracted_info.get('price'))
 
-    # Step 3: Check if all required information is present
-    required_fields = ["restaurant type", "neighborhood", "date", "time", "number of people"]
-    missing_info = [field for field in required_fields if extracted_info.get(field) is None]
+    # Step 3: Check if all information required for the search is present
+    required_fields_for_search = ["restaurant_type", "neighborhood", "date", "time", "number_of_people"]
+    missing_info = [field for field in required_fields_for_search if extracted_info.get(field) is None]
 
     if missing_info:
         # If information is missing, ask the user for it
         message = "I have some details, but I need more information to find a restaurant. "
         
-        # List the details that were found
-        found_details = {k: v for k, v in extracted_info.items() if v is not None}
+        found_details = {k.replace('_', ' '): v for k, v in extracted_info.items() if v is not None}
         if found_details:
              message += f"Here's what I understood: {json.dumps(found_details)}. "
              
-        message += f"Please provide the missing details: {', '.join(missing_info)}. Try sending all the information in one message."
+        message += f"Please provide the missing details: {', '.join(missing_info).replace('_', ' ')}. Try sending all the information in one message."
         return message
     else:
-        # If all information is present, proceed with the web search
+        # If all search information is present, proceed with the web search
         price_info = extracted_info.get('price')
         price_msg = "any price"
         if price_info:
@@ -163,16 +122,16 @@ def find_restaurant(user_query: str) -> str:
                 model=agent_model,
                 name="Web Search Restaurant Finder",
                 description="Agent that finds real restaurants using web search.",
-                instructions="You must use your web_search tool to find one single real restaurant matching the user's request. Your final answer must be ONLY a valid JSON object with the keys 'name' and 'address'. Do not include any other text.",
+                instructions="You must use your web_search tool to find one single real restaurant matching the user's request. Your final answer must be ONLY a valid JSON object with the keys 'name' and 'address' and 'phone_number'. Do not include any other text.",
                 tools=[{"type": "web_search"}],
             )
             
             search_prompt = f"""
             Find a single, real, and well-rated restaurant matching these criteria:
-            - Cuisine: {extracted_info.get('restaurant type')}
+            - Cuisine: {extracted_info.get('restaurant_type')}
             - Location/Neighborhood: {extracted_info.get('neighborhood')}
             - Price: {price_msg}
-            - Note: This is a booking for {extracted_info.get('number of people')} people on {extracted_info.get('date')} at {extracted_info.get('time')}.
+            - Note: This is a booking for {extracted_info.get('number_of_people')} people on {extracted_info.get('date')} at {extracted_info.get('time')}, try making sure there is room at this time for those persons.
             - Allergies to note: {extracted_info.get('allergies', 'None')}
             """
 
@@ -181,7 +140,6 @@ def find_restaurant(user_query: str) -> str:
                 inputs=search_prompt
             )
         
-            # Extract the final message from the agent's response
             final_message_content = next(
                 (output.content for output in response.outputs if hasattr(output, 'type') and output.type == 'message.output'),
                 None  
@@ -190,24 +148,48 @@ def find_restaurant(user_query: str) -> str:
             if not final_message_content:
                  raise ValueError("The search agent did not return a final answer.")
             
-            # Clean up the JSON response from the agent
             clean_json_str = re.sub(r'^```json\s*|\s*```$', '', final_message_content, flags=re.MULTILINE)
             restaurant_found_dict = json.loads(clean_json_str)
 
             name = restaurant_found_dict.get("name", "N/A")
             address = restaurant_found_dict.get("address", "N/A")
+            phone_number = restaurant_found_dict.get("phone_number", "N/A")
             
-            return f"I found this restaurant for you: {name}, located at {address}. Would you like me to make a reservation?"
+            # Step 4: Check if booking information is missing
+            required_fields_for_booking = ["reservation_name", "time_flexibility"]
+            missing_booking_info = [field for field in required_fields_for_booking if not extracted_info.get(field)]
+
+            if missing_booking_info:
+                # If name or flexibility are missing, ask for them
+                fields_to_ask = ' and '.join(missing_booking_info).replace('_', ' ')
+                return (f"I found this restaurant for you: {name}, located at {address}. "
+                        f"The phone number is: {phone_number}. To finalize the reservation, "
+                        f"please provide your {fields_to_ask}.")
+            else:
+                # If all information is present, confirm the booking
+                reservation_name = extracted_info.get('reservation_name')
+                time_flexibility = extracted_info.get('time_flexibility')
+                return (f"Thank you, {reservation_name}. I will now make the reservation at {name} "
+                        f"({address}, {phone_number}) for {extracted_info.get('number_of_people')} people "
+                        f"on {extracted_info.get('date')} at {extracted_info.get('time')}, "
+                        f"noting your time flexibility of '{time_flexibility}'.")
             
         except Exception as e:
             return f"Error: I had trouble searching for a restaurant. {e}"
 
 
-#user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
-#print(find_restaurant(user_call_1, "0"))
+# --- Example Usage ---
 
+# Example 1: Initial call without booking details.
+# The function should find a restaurant and then ask for the name and flexibility.
+user_call_1 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 19th, 2025 at 7:00 PM. Price range is 20-50€. Please note a Gluten allergy."
+print("--- First Call ---")
+print(find_restaurant(user_call_1))
 
-# print("\n" + "="*50 + "\n")
+print("\n" + "="*50 + "\n")
 
-#user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 20th, 2025 at 8:00 PM. Price range is 20-50€. Please note a Gluten allergy."
-#print(find_restaurant(user_call_2))#
+# Example 2: Follow-up call providing all necessary details from the start.
+# The function should find a restaurant and confirm the booking directly.
+user_call_2 = "I need a reservation for an Italian place in Paris 16 for 2 people on October 19th, 2025 at 7:00 PM. Price range is 20-50€, with a gluten allergy. The reservation is for Smith, and we are flexible by plus or minus 30 minutes."
+print("--- Second Call (with all details) ---")
+print(find_restaurant(user_call_2))
