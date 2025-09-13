@@ -45,7 +45,7 @@ def parse_price(price_str: str | None) -> dict | None:
     return price_data
 
 def save_to_json_database(thread_id: str, new_info: dict) -> dict:
-    database_file = "tmp/thread.json" #shady buisness with paths
+    database_file = "data/thread.json" #shady buisness with paths
     try:
         with open(database_file, "r") as f:
             database = json.load(f)
@@ -202,8 +202,8 @@ def find_restaurant(user_query: str, thread_id: str):
             
         return final_output
 
-user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
-print(find_restaurant(user_call_1, 1234))
+'''user_call_1 = " Ha oui désolé, je n'ai aucune alergies, je veux y aller le 12/11/2027 à 12H10, avec 2 personnes" 
+print(find_restaurant(user_call_1, 1234))'''
 
 
 # print("\n" + "="*50 + "\n")
