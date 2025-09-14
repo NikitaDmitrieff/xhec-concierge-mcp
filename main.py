@@ -70,7 +70,7 @@ def call_restaurant(
     title="Get call transcript",
     description="Get the transcript of a call.",
 )
-def get_call_transcript(call_id: str) -> str:
+def fetch_call_transcript(call_id: str) -> str:
     return get_call_transcript(call_id)
 
 
