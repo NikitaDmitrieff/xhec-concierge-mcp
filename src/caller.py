@@ -107,6 +107,9 @@ def send_bland_pathway_call(
     return transcript
 
 
+
+
+
 if __name__ == "__main__":
 
     phone_number = "+33601420712"

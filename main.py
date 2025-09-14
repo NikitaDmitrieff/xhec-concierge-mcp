@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import os
 from src.prompt_resto_client import find_restaurant
 from src.prompt_sport_wellness import find_sports_wellness
-from src.calendar_like_a_boss import create_calendar_links
+from src.calendar_like_a_boss import make_calendar_api_based_on_transcript
 from src.caller import send_bland_pathway_call
 from src.caller import task
 
@@ -33,24 +33,16 @@ def echo(text: str = Field(description="The text to echo")) -> str:
     title="Generate a calendar link",
     description=(
         "Use this tool to generate a Google Calendar link for a meeting or reservation. "
-        "You must provide the event details: title, start time (as a datetime), duration in hours, "
-        "a description, and a location. The output must always follow this JSON format:\n\n"
-        "{\n"
-        '  "event_title": "Dîner chez Le Grand Restaurant",\n'
-        '  "start_time": "2025-10-19T19:00:00",  # 19 Octobre 2025 à 19h00\n'
-        '  "duration_hours": 2,\n'
-        '  "description": "Réservation pour 2 personnes. Allergie au gluten à noter.",\n'
-        '  "location": "123 Rue de la Gastronomie, 75016 Paris, France"\n'
-        "}\n\n"
-        "The tool then returns a valid Google Calendar link that the user can open directly."
+        "You must provide the event details: title, start time (as a datetime), duration in hours (default is 2h), "
+        "a description, and a location. If not enough info, ask for more to the user before calling the function"
     )
 )
-def calendar(event_title : str, start_time : str, duration_hours : int, description : str, location : str) -> str:
+def calendar(transcript : str) -> str:
     """
     Cette fonction prend les informations d’un événement et retourne un lien Google Calendar
     que l’utilisateur peut utiliser pour ajouter l’événement à son agenda.
     """
-    return create_calendar_links(event_title, start_time, duration_hours, description, location)
+    return make_calendar_api_based_on_transcript(transcript)
 
 @mcp.tool(
     title="Fetch restaurant suggestions",
