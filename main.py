@@ -10,31 +10,13 @@ from mistralai import Mistral
 from dotenv import load_dotenv
 import os
 from src.prompt_resto_client import find_restaurant
-from src.prompt_sport_wellness import find_sports_wellness
-from src.calendar_like_a_boss import make_calendar_api_based_on_transcript
-from src.caller import send_bland_pathway_call
+from src.caller import send_bland_pathway_call, get_call_transcript
 from src.caller import task
 
 
 load_dotenv()
 
 mcp = FastMCP("X-HEC Concierge", port=3000, stateless_http=True, debug=True)
-
-
-@mcp.tool(
-    title="Generate a calendar link",
-    description=(
-        "Use this tool to generate a Google Calendar link for a meeting or reservation. "
-        "You must provide the event details: title, start time (as a datetime), duration in hours (default is 2h), "
-        "a description, and a location. If not enough info, ask for more to the user before calling the function"
-    ),
-)
-def calendar(transcript: str) -> str:
-    """
-    Cette fonction prend les informations d’un événement et retourne un lien Google Calendar
-    que l’utilisateur peut utiliser pour ajouter l’événement à son agenda.
-    """
-    return make_calendar_api_based_on_transcript(transcript)
 
 
 @mcp.tool(
@@ -82,6 +64,14 @@ def call_restaurant(
         time_of_reservation=time_of_reservation,
         reservation_name=reservation_name,
     )
+
+
+@mcp.tool(
+    title="Get call transcript",
+    description="Get the transcript of a call.",
+)
+def get_call_transcript(call_id: str) -> str:
+    return get_call_transcript(call_id)
 
 
 if __name__ == "__main__":
