@@ -18,15 +18,7 @@ from src.caller import task
 
 load_dotenv()
 
-mcp = FastMCP("Echo Server", port=3000, stateless_http=True, debug=True)
-
-
-@mcp.tool(
-    title="Echo Tool",
-    description="Echo the input text",
-)
-def echo(text: str = Field(description="The text to echo")) -> str:
-    return text
+mcp = FastMCP("X-HEC Concierge", port=3000, stateless_http=True, debug=True)
 
 
 @mcp.tool(
@@ -35,14 +27,15 @@ def echo(text: str = Field(description="The text to echo")) -> str:
         "Use this tool to generate a Google Calendar link for a meeting or reservation. "
         "You must provide the event details: title, start time (as a datetime), duration in hours (default is 2h), "
         "a description, and a location. If not enough info, ask for more to the user before calling the function"
-    )
+    ),
 )
-def calendar(transcript : str) -> str:
+def calendar(transcript: str) -> str:
     """
     Cette fonction prend les informations d’un événement et retourne un lien Google Calendar
     que l’utilisateur peut utiliser pour ajouter l’événement à son agenda.
     """
     return make_calendar_api_based_on_transcript(transcript)
+
 
 @mcp.tool(
     title="Fetch restaurant suggestions",

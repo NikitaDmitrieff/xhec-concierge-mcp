@@ -3,10 +3,13 @@ from datetime import datetime, timedelta
 import json
 from mistralai import Mistral
 
-def create_calendar_links(event_title, start_time, duration_hours, description, location):
+
+def create_calendar_links(
+    event_title, start_time, duration_hours, description, location
+):
     """
     Génère des liens "Ajouter au calendrier" pour Google, Outlook et Yahoo.
-    
+
     :param event_title: Titre de l'événement.
     :param start_time: Objet datetime pour le début de l'événement.
     :param duration_hours: Durée de l'événement en heures.
@@ -14,25 +17,28 @@ def create_calendar_links(event_title, start_time, duration_hours, description, 
     :param location: Lieu de l'événement.
     """
     end_time = start_time + timedelta(hours=duration_hours)
-    
+
     # --- Encodage pour les URL ---
     # S'assure que les caractères spéciaux (espaces, etc.) sont correctement formatés.
     title_encoded = quote_plus(event_title)
     description_encoded = quote_plus(description)
     location_encoded = quote_plus(location)
-    
+
     # --- Formatage des dates ---
     # Google Calendar utilise le format YYYYMMDDTHHMMSSZ (UTC)
-    start_utc = start_time.strftime('%Y%m%dT%H%M%SZ')
-    end_utc = end_time.strftime('%Y%m%dT%H%M%SZ')
+    start_utc = start_time.strftime("%Y%m%dT%H%M%SZ")
+    end_utc = end_time.strftime("%Y%m%dT%H%M%SZ")
     # Google Calendar
-    link= (f"https://www.google.com/calendar/render?action=TEMPLATE"
-                       f"&text={title_encoded}"
-                       f"&dates={start_utc}/{end_utc}"
-                       f"&details={description_encoded}"
-                       f"&location={location_encoded}")
+    link = (
+        f"https://www.google.com/calendar/render?action=TEMPLATE"
+        f"&text={title_encoded}"
+        f"&dates={start_utc}/{end_utc}"
+        f"&details={description_encoded}"
+        f"&location={location_encoded}"
+    )
 
     return link
+
 
 def extract_event_details(transcript: str):
     """
@@ -43,24 +49,30 @@ def extract_event_details(transcript: str):
     # It is recommended to use environment variables for security.
     api_key = "VrfSiwwufNdGz1b9ekZmBsWDf1yyqqDX"  # Replace with your key
     if api_key == "YOUR_MISTRAL_API_KEY":
-        print("Warning: Using dummy data. Please replace 'YOUR_MISTRAL_API_KEY' with a real key.")
+        print(
+            "Warning: Using dummy data. Please replace 'YOUR_MISTRAL_API_KEY' with a real key."
+        )
         # Return dummy data for demonstration if no key is provided
         if "lunch" in transcript.lower():
-            return json.dumps({
-                "event_title": "Lunch with Client",
-                "start_time": "2025-10-05T12:30:00",
-                "location": "La Trattoria",
-                "description": "Build rapport and have an informal chat.",
-                "is_lunch": True
-            })
+            return json.dumps(
+                {
+                    "event_title": "Lunch with Client",
+                    "start_time": "2025-10-05T12:30:00",
+                    "location": "La Trattoria",
+                    "description": "Build rapport and have an informal chat.",
+                    "is_lunch": True,
+                }
+            )
         else:
-            return json.dumps({
-                "event_title": "Quarterly Results Meeting",
-                "start_time": "2025-09-21T14:00:00",
-                "location": "Conference Room B",
-                "description": "Discussing the results from the last quarter and planning our next steps.",
-                "is_lunch": False
-            })
+            return json.dumps(
+                {
+                    "event_title": "Quarterly Results Meeting",
+                    "start_time": "2025-09-21T14:00:00",
+                    "location": "Conference Room B",
+                    "description": "Discussing the results from the last quarter and planning our next steps.",
+                    "is_lunch": False,
+                }
+            )
 
     model = "mistral-large-latest"
     client = Mistral(api_key=api_key)
@@ -85,14 +97,14 @@ def extract_event_details(transcript: str):
     chat_response = client.chat.complete(
         model=model,
         messages=[{"role": "user", "content": system_prompt}],
-        response_format={
-            "type": "json_object"
-        },
+        response_format={"type": "json_object"},
     )
 
     return chat_response.choices[0].message.content
 
+
 # --- Main Function to Fulfill the Request ---
+
 
 def make_calendar_api_based_on_transcript(transcript: str):
     """
@@ -110,25 +122,23 @@ def make_calendar_api_based_on_transcript(transcript: str):
         location = event_details.get("location", "Not Specified")
         description = event_details.get("description", "")
         is_lunch = event_details.get("is_lunch", False)
-        
+
         if not start_time_str:
-            return "Error: Could not determine the event start time from the transcript."
-            
+            return (
+                "Error: Could not determine the event start time from the transcript."
+            )
+
         # 3. Process the details for the calendar function
         start_time = datetime.fromisoformat(start_time_str)
-        
+
         # A lunch is considered to have a duration of 2 hours
         duration_hours = 2 if is_lunch else 1
 
         # 4. Generate and return the calendar link
         calendar_link = create_calendar_links(
-            event_title,
-            start_time,
-            duration_hours,
-            description,
-            location
+            event_title, start_time, duration_hours, description, location
         )
-        
+
         return calendar_link
 
     except json.JSONDecodeError:
@@ -139,8 +149,7 @@ def make_calendar_api_based_on_transcript(transcript: str):
         return f"An unexpected error occurred: {e}"
 
 
-
-'''if __name__ == "__main__":
+"""if __name__ == "__main__":
     # --- Utilisation ---
     event_details = {
     "event_title": "Dîner chez 'Le Grand Restaurant'",
@@ -151,4 +160,4 @@ def make_calendar_api_based_on_transcript(transcript: str):
 }
     calendar_link = create_calendar_links(**event_details)
 
-    print(f"Google: {calendar_link}")'''
+    print(f"Google: {calendar_link}")"""
