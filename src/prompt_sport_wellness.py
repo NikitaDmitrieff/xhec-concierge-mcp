@@ -121,14 +121,14 @@ def find_sports_wellness(user_query: str) -> str:
         return f"Error during sport search: {e}"
 
     mapping = {
-        "tennis": "Massage dos et épaules",
-        "padel": "Massage dos et bras",
-        "fitness": "Massage jambes ou full body",
-        "running": "Massage jambes",
-        "escalade": "Massage avant-bras et dos",
+        "tennis": "Back and shoulders massage",
+        "padel": "Back and arms massage",
+        "fitness": "Legs or full body massage",
+        "running": "Legs massage",
+        "climbing": "Forearms and back massage",
     }
     wellness = mapping.get(
-        extracted_info.get("sport_type", "").lower(), "Massage récupération générale"
+        extracted_info.get("sport_type", "").lower(), "General recovery massage"
     )
 
     return json.dumps(

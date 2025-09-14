@@ -113,17 +113,6 @@ def get_call_transcript(call_id: str) -> str:
         time.sleep(2)
 
     summary= last["summary"] if last["summary"] else last["concatenated_transcript"]
-    print(summary)
-    try:
-        corr = requests.get(f"{status_url}/correct", headers=headers, timeout=15)
-        corr.raise_for_status()
-        corrected = corr.json().get("corrected") or []
-        if corrected:
-            transcript = " ".join(
-                seg.get("text", "").strip() for seg in corrected
-            ).strip()
-    except requests.RequestException:
-        pass
 
     return f"Based on this summary of the transcript, create a google calendar link for the event if successful. Otherwise explain to the user the situation. \n\summary of the transcript: {summary}"
 
@@ -132,15 +121,16 @@ if __name__ == "__main__":
 
     phone_number = "+33601420712"
 
-    transcript = send_bland_pathway_call(
-        phone_number=phone_number,
-        restaurant_name="Restaurant La Rotonde",
-        number_of_people=2,
-        date_of_reservation="tonight",
-        time_of_reservation="8:25 PM",
-        reservation_name="Mr Alexis",
-    )
+    #transcript = send_bland_pathway_call(
+    #    phone_number=phone_number,
+    #    restaurant_name="Restaurant La Rotonde",
+    #    number_of_people=2,
+    #    date_of_reservation="tonight",
+    #    time_of_reservation="8:25 PM",
+    #    reservation_name="Mr Alexis",
+    #)
 
-    call_id = transcript.split("call_id=", 1)[1].split()[0].strip("'\"")
+    #call_id = transcript.split("call_id=", 1)[1].split()[0].strip("'\"")
+    call_id = "970bb21a-334a-4b8f-ba0c-6788e3697db1"
     print(f"call_id: {call_id}")
     print(get_call_transcript(call_id))

@@ -23,12 +23,12 @@ mcp = FastMCP("X-HEC Concierge", port=3000, stateless_http=True, debug=True)
     title="Fetch restaurant suggestions",
     description="Fetch restaurant suggestions from Mistral, you must provide the previous info if the previous research was sunsuccessful.",
 )
-def cherche_restaurant(prompt_utilisateur) -> str:
+def search_restaurant(user_prompt) -> str:
     """
-    Cette fonction prend le prompt de l'utilisateur, l'enveloppe dans une instruction
-    pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
+    This function takes the user's prompt, wraps it in an instruction
+    for Mistral to obtain a list of 5 restaurants in JSON format.
     """
-    return find_restaurant(prompt_utilisateur)
+    return find_restaurant(user_prompt)
 
 
 @mcp.tool(
