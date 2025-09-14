@@ -25,8 +25,8 @@ mcp = FastMCP("X-HEC Concierge", port=3000, stateless_http=True, debug=True)
 )
 def cherche_restaurant(prompt_utilisateur) -> str:
     """
-    Cette fonction prend le prompt de l'utilisateur, l'enveloppe dans une instruction
-    pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
+    This function takes the user's prompt, wraps it in an instruction
+    for Mistral to obtain a list of 5 restaurants in JSON format.
     """
     return find_restaurant(prompt_utilisateur)
 
