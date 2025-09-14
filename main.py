@@ -36,6 +36,16 @@ def calendar(event_title, start_time, duration_hours, description, location):
     """
     return create_calendar_links(event_title, start_time, duration_hours, description, location)
 
+@mcp.tool(
+    title="Fetch restaurant suggestions",
+    description="Fetch restaurant suggestions from Mistral, you must provide the previous info if the previous research was sunsuccessful.",
+)
+def cherche_restaurant(prompt_utilisateur) -> str:
+    """
+    Cette fonction prend le prompt de l'utilisateur, l'enveloppe dans une instruction
+    pour Mistral afin d'obtenir une liste de 5 restaurants au format JSON.
+    """
+    return find_restaurant(prompt_utilisateur)
 
 
 if __name__ == "__main__":
