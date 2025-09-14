@@ -49,6 +49,7 @@ def call_restaurant(
     number_of_people: int,
     date_of_reservation: str,
     time_of_reservation: str,
+    reservation_name: str,
 ) -> str:
     """
     This function takes the user's prompt, and calls the restaurant to book a table.
@@ -59,15 +60,17 @@ def call_restaurant(
         number_of_people: The number of people in the reservation
         date_of_reservation: The date of the reservation
         time_of_reservation: The time of the reservation
+        reservation_name: The name of the reservation
     Returns:
-        The call_id on success, or raises for HTTP errors.
+        The transcript of the call, or raises for HTTP errors.        The call_id on success, or raises for HTTP errors.
     """
     return send_bland_pathway_call(
-        phone_number="+33601420712",
+        phone_number=phone_number,
         restaurant_name=restaurant_name,
         number_of_people=number_of_people,
         date_of_reservation=date_of_reservation,
         time_of_reservation=time_of_reservation,
+        reservation_name=reservation_name,
     )
 
 
