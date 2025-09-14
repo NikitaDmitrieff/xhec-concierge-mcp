@@ -42,7 +42,7 @@ def echo(text: str = Field(description="The text to echo")) -> str:
         "The tool then returns a valid Google Calendar link that the user can open directly."
     )
 )
-def calendar(event_title, start_time, duration_hours, description, location):
+def calendar(event_title : str, start_time : str, duration_hours : int, description : str, location : str) -> str:
     """
     Cette fonction prend les informations d’un événement et retourne un lien Google Calendar
     que l’utilisateur peut utiliser pour ajouter l’événement à son agenda.
