@@ -28,11 +28,24 @@ def echo(text: str = Field(description="The text to echo")) -> str:
 
 @mcp.tool(
     title="Generate a calendar link",
-    description="given some information on the meeting, this tool can generate a calendar link to give to the user"
+    description=(
+        "Use this tool to generate a Google Calendar link for a meeting or reservation. "
+        "You must provide the event details: title, start time (as a datetime), duration in hours, "
+        "a description, and a location. The output must always follow this JSON format:\n\n"
+        "{\n"
+        '  "event_title": "Dîner chez Le Grand Restaurant",\n'
+        '  "start_time": "2025-10-19T19:00:00",  # 19 Octobre 2025 à 19h00\n'
+        '  "duration_hours": 2,\n'
+        '  "description": "Réservation pour 2 personnes. Allergie au gluten à noter.",\n'
+        '  "location": "123 Rue de la Gastronomie, 75016 Paris, France"\n'
+        "}\n\n"
+        "The tool then returns a valid Google Calendar link that the user can open directly."
+    )
 )
 def calendar(event_title, start_time, duration_hours, description, location):
     """
-    Cette fonction prend des informatiuons sur un évenement, et retourne un lien Google Calendar
+    Cette fonction prend les informations d’un événement et retourne un lien Google Calendar
+    que l’utilisateur peut utiliser pour ajouter l’événement à son agenda.
     """
     return create_calendar_links(event_title, start_time, duration_hours, description, location)
 
