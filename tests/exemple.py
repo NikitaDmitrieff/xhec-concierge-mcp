@@ -1,11 +1,14 @@
 from mistralai import Mistral
 
+
 def find_restaurants(user_prompt):
     """
     This function takes the user's prompt, wraps it in an instruction for Mistral,
     and returns a list of 5 restaurants in JSON format.
     """
-    api_key = "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"  # Make sure to handle this key securely
+    api_key = (
+        "Ry2yuGs2RqXlNWnxJDvtBK8xQjBIv9lI"  # Make sure to handle this key securely
+    )
     model = "mistral-large-latest"
 
     client = Mistral(api_key=api_key)
@@ -26,10 +29,13 @@ def find_restaurants(user_prompt):
     chat_response = client.chat.complete(
         model=model,
         messages=[{"role": "user", "content": system_prompt}],
-        response_format={"type": "json_object"}  # This option forces Mistral to return valid JSON
+        response_format={
+            "type": "json_object"
+        },  # This option forces Mistral to return valid JSON
     )
 
     return chat_response.choices[0].message.content
+
 
 # Example usage with your search prompt
 search_prompt = "I'm looking for a good, affordable Italian restaurant in Paris."

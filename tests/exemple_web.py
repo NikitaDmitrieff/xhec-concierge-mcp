@@ -12,13 +12,15 @@ agent = client.beta.agents.create(
 )
 
 resp = client.beta.conversations.start(
-    agent_id=agent.id,
-    inputs="Who won the last European Football cup?"
+    agent_id=agent.id, inputs="Who won the last European Football cup?"
 )
 
 answer = " ".join(
-    c.text for o in resp.outputs if o.type == "message.output"
-    for c in o.content if c.type == "text"
+    c.text
+    for o in resp.outputs
+    if o.type == "message.output"
+    for c in o.content
+    if c.type == "text"
 )
 
 print("Answer:", answer)
