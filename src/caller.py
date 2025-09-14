@@ -78,7 +78,7 @@ def send_bland_pathway_call(
     call_id = data["call_id"]
     # --- Wait for the call to complete ---
     status_url = f"https://api.bland.ai/v1/calls/{call_id}"
-    deadline = time.time() + 100
+    deadline = time.time() + 300
     last = None
     while True:
         r = requests.get(status_url, headers=headers, timeout=15)
@@ -98,7 +98,9 @@ def send_bland_pathway_call(
         corr.raise_for_status()
         corrected = corr.json().get("corrected") or []
         if corrected:
-            transcript = " ".join(seg.get("text", "").strip() for seg in corrected).strip()
+            transcript = " ".join(
+                seg.get("text", "").strip() for seg in corrected
+            ).strip()
     except requests.RequestException:
         pass
 
