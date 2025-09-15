@@ -72,7 +72,3 @@ def call_restaurant(
 )
 def fetch_call_transcript(call_id: str) -> str:
     return get_call_transcript(call_id)
-
-
-if __name__ == "__main__":
-    mcp.run(transport="streamable-http")
